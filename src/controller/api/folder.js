@@ -6,7 +6,6 @@ module.exports = class extends think.Controller {
   }
 
   async listAction() {
-    console.log(this.ctx.request);
     let data = await model.where({authorid:this.ctx.get('authorid')}).select();
     this.body = data;
   }
