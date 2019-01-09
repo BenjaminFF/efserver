@@ -4,7 +4,7 @@ module.exports = class extends think.Controller {
   __before() {
     //添加权限
   }
-  //create set indicates that it's vocabulary will be created immediately
+  //create set indicates that it's vocabulary will be created, and record will be initialized.
   createAction() {
     let authorid=this.ctx.post('authorid')
     let set=JSON.parse(this.ctx.post('set'));
@@ -15,12 +15,26 @@ module.exports = class extends think.Controller {
     set.createtime=Date.now();
     set.authorid=authorid;
     set.vcount=vocabularies.length;
+
+    let records=[];
     vocabularies.forEach((vocabulary)=>{
       vocabulary.vid=uniqid.time();
       vocabulary.sid=sid;
     })
-    this.body=JSON.stringify(vocabularies);
-    model.create(set,vocabularies);
+
+    vocabularies.forEach((vocabulary)=>{
+      records.push({
+        rid:uniqid.time(),
+        vid:vocabulary.vid,
+        sid:vocabulary.sid,
+        uid:authorid,
+        rflashcard:0,
+        rmatrix:0,
+        rwrite:0
+      })
+    })
+
+    model.create(set,vocabularies,records);
   }
   //remove set indicates that it's vocabularies will be removed too.
   removeAction(){
@@ -28,7 +42,7 @@ module.exports = class extends think.Controller {
   }
 
   async acquireAction(){
-    this.body=await model.acquire(this.ctx.get('sid'));
+    this.body=await model.acquire(this.ctx.get('sid'),this.ctx.get('uid'));
   }
 
   //update set and vocabularies both
