@@ -9,32 +9,12 @@ module.exports = class extends think.Controller {
     let authorid=this.ctx.post('authorid')
     let set=JSON.parse(this.ctx.post('set'));
     let vocabularies=JSON.parse(this.ctx.post('vocabularies'));
-    let sid=uniqid.time();
 
-    set.sid=sid;
     set.createtime=Date.now();
     set.authorid=authorid;
     set.vcount=vocabularies.length;
 
-    let records=[];
-    vocabularies.forEach((vocabulary)=>{
-      vocabulary.vid=uniqid.time();
-      vocabulary.sid=sid;
-    })
-
-    vocabularies.forEach((vocabulary)=>{
-      records.push({
-        rid:uniqid.time(),
-        vid:vocabulary.vid,
-        sid:vocabulary.sid,
-        uid:authorid,
-        rflashcard:0,
-        rmatrix:0,
-        rwrite:0
-      })
-    })
-
-    model.create(set,vocabularies,records);
+    model.create(set,vocabularies,authorid);
   }
   //remove set indicates that it's vocabularies will be removed too.
   removeAction(){
@@ -42,6 +22,7 @@ module.exports = class extends think.Controller {
   }
 
   async acquireAction(){
+    console.log(uniqid.process());
     this.body=await model.acquire(this.ctx.get('sid'),this.ctx.get('uid'));
   }
 
@@ -57,5 +38,9 @@ module.exports = class extends think.Controller {
   async updateAction(){
     let set=JSON.parse(this.ctx.post('set'));
     await model.where({sid:set.sid}).update(set);
+  }
+
+  async listAction(){
+    let authorid=JSON.parse(this.ctx.get('uid'))
   }
 }

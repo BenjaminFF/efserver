@@ -6,14 +6,14 @@ module.exports = class extends think.Controller {
     //添加权限
   }
 
-  async addAction(){
+  addAction(){
     let vocabulary={
-      vid:uniqid.time(),
       term:this.ctx.post('term'),
       definition:this.ctx.post('definition'),
-      sid:this.ctx.post('sid')
+      sid:this.ctx.post('sid'),
+      authorid:this.ctx.post('authorid')
     }
-    await model.add(vocabulary);
+    model.addV(this.ctx.post('sid'),this.ctx.post('authorid'),vocabulary);
   }
 
   async updateAction(){
@@ -22,5 +22,9 @@ module.exports = class extends think.Controller {
       definition:this.ctx.post('definition'),
     }
     await model.where({vid:this.ctx.post('vid')}).update(updatedVocabulary);
+  }
+
+  async deleteAction(){
+    await model.where({vid:this.ctx.post('vid')}).delete();
   }
 }

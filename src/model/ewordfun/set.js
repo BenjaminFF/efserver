@@ -1,11 +1,26 @@
 module.exports = class extends think.Model {
-  async create(set, vocabularies, records) {
+  async create(set, vocabularies,authorid) {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
-      let recordDB=await this.model('record').db(this.db());
+      let recordDB=await this.model('v_record').db(this.db());
       await this.startTrans();
-      await vocabularyDB.addMany(vocabularies);
-      await this.add(set);
+      let sid=await this.add(set);
+      vocabularies.forEach((vocabulary)=>{
+        vocabulary.sid=sid;
+        vocabulary.authorid=authorid;
+      })
+      let vidArr=await vocabularyDB.addMany(vocabularies);
+      let records=[];
+      vidArr.forEach((vid)=>{
+        records.push({
+          sid:sid,
+          vid:vid,
+          uid:authorid,
+          rflashcard:false,
+          rmatrix:false,
+          rwrite:false
+        })
+      })
       await recordDB.addMany(records);
       await this.commit();
     } catch (e) {
@@ -17,9 +32,11 @@ module.exports = class extends think.Model {
   async remove(sid) {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
+      let recordDB=await this.model('v_record').db(this.db());
       await this.startTrans();
       await this.where({sid: sid}).delete();
       await vocabularyDB.where({sid: sid}).delete();
+      await recordDB.where({sid:sid}).delete();
       await this.commit();
     } catch (e) {
       await this.rollback();
@@ -29,7 +46,7 @@ module.exports = class extends think.Model {
   async acquire(sid,uid) {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
-      let recordDB = await this.model('record').db(this.db());
+      let recordDB = await this.model('v_record').db(this.db());
       await this.startTrans();
       let set = await this.where({sid: sid}).select();
       let vocabularies = await vocabularyDB.where({sid: sid}).select();
@@ -61,7 +78,7 @@ module.exports = class extends think.Model {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
       vocabularyDB._pk = 'vid';
       await this.startTrans();
-      //await this.where({sid:set.sid}).update(set);
+      await this.where({sid:set.sid}).update(set);
       await vocabularyDB.updateMany(vocabularies);
       await this.commit();
     } catch (e) {

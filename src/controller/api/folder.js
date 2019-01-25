@@ -6,13 +6,12 @@ module.exports = class extends think.Controller {
   }
 
   async listAction() {
-    let data = await model.where({authorid:this.ctx.get('authorid')}).select();
+    let data = await model.where({authorid: this.ctx.get('authorid')}).select();
     this.body = data;
   }
 
   async addAction() {
     await model.add({
-      fid: uniqid.time(),
       name: this.ctx.post('name'),
       intro: this.ctx.post('intro'),
       authorid: this.ctx.post('authorid'),
@@ -28,7 +27,15 @@ module.exports = class extends think.Controller {
     await model.where({fid: this.ctx.post('fid')}).update(model.beforeUpdate(folder));
   }
 
+  async addSetAction() {
+
+  }
+
+  async listSetAction(){
+
+  }
+
   async deleteAction() {
-    await model.where({fid:this.ctx.post('fid')}).delete();
+    await model.where({fid: this.ctx.post('fid')}).delete();
   }
 };
