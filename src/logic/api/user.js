@@ -40,9 +40,16 @@ module.exports = class extends think.Logic {
         length:{max:64}
       }
     };
+    return this.validate(rules);
+  }
+
+  validateAction(){
+
+  }
+
+  getCaptchaAction(){
+    return false;
   }
 };
-//用户进入登陆界面，传输验证码图片数据
-//输入email账号，password, 验证码。如果正确，就返回user_authenticity_token和用户
 
 

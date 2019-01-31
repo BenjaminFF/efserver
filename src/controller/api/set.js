@@ -6,7 +6,7 @@ module.exports = class extends think.Controller {
   }
   //create set indicates that it's vocabulary will be created, and record will be initialized.
   createAction() {
-    let authorid=this.ctx.post('authorid')
+    let authorid = this.ctx.cookie('uid');
     let set=JSON.parse(this.ctx.post('set'));
     let vocabularies=JSON.parse(this.ctx.post('vocabularies'));
 
@@ -40,7 +40,10 @@ module.exports = class extends think.Controller {
     await model.where({sid:set.sid}).update(set);
   }
 
-  async listAction(){
-    let authorid=JSON.parse(this.ctx.get('uid'))
+  async list_of_authorAction(){
+    let authorid = this.ctx.cookie('uid');
+    let sets=await model.where({authorid:authorid}).select();
+    console.log(sets);
+    this.body=sets;
   }
 }

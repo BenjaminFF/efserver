@@ -6,7 +6,8 @@ module.exports = class extends think.Controller {
   }
 
   async listAction() {
-    let data = await model.where({authorid: this.ctx.get('authorid')}).select();
+    let uid = this.ctx.cookie('uid');
+    let data = await model.where({authorid: uid}).select();
     this.body = data;
   }
 
