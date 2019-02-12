@@ -23,7 +23,7 @@ module.exports = class extends think.Controller {
 
   async acquireAction(){
     console.log(uniqid.process());
-    this.body=await model.acquire(this.ctx.get('sid'),this.ctx.get('uid'));
+    this.body=await model.acquire(this.ctx.query.sid,this.ctx.query.uid);
   }
 
   //update set and vocabularies both
@@ -42,8 +42,11 @@ module.exports = class extends think.Controller {
 
   async list_of_authorAction(){
     let authorid = this.ctx.cookie('uid');
-    let sets=await model.where({authorid:authorid}).select();
-    console.log(sets);
-    this.body=sets;
+    this.body=await model.where({authorid:authorid}).select();
+  }
+
+  async list_of_userAction(){
+    let uid = this.ctx.cookie('uid');
+    this.body=await model.listOfUser(uid);
   }
 }

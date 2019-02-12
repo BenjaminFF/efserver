@@ -64,7 +64,6 @@ exports.session = {
   common: {
     cookie: {
       name: 'ewordfun',
-      maxAge: 60 * 60 * 24 * 1000 * 20,
       keys: ['userInfo'],
       signed: true,
       httpOnly: true,

@@ -33,7 +33,8 @@ module.exports = class extends think.Controller {
   }
 
   async listSetAction(){
-
+    console.log(this.ctx.query.fid);
+    this.body=await model.listSet(this.ctx.query.fid);
   }
 
   async deleteAction() {

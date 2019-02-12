@@ -39,9 +39,13 @@ module.exports = class extends think.Controller {
         loginTime: Date.now(),
         uip: this.ctx.header['x-real-ip']
       };
-      await this.cookie('uid', userInfo.uid, {maxAge: 15 * 3600 * 1000 * 20});
-      await this.cache(userInfo.uid, JSON.stringify(userInfo), 'redis');
-      await this.session(userInfo.uid, JSON.stringify(userInfo));
+      await this.cookie('uid', userInfo.uid, {maxAge: 24 * 3600 * 1000 * 20});
+      await this.cache(userInfo.uid, JSON.stringify(userInfo), {
+        type: 'redis',
+        redis: {
+        timeout: 24 * 3600 * 1000 * 20}
+      });
+      await this.session(userInfo.uid, JSON.stringify(userInfo),{maxAge: 24 * 3600 * 1000 * 20});
       this.body = {validated: true,name:data.name,email:data.email};
     }
   }
