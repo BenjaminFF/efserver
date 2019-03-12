@@ -55,8 +55,12 @@ module.exports = class extends think.Model {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
       let recordDB = await this.model('v_record').db(this.db());
+      let set_userDB=await this.model('set_user').db(this.db());
       await this.startTrans();
-      let set = await this.where({sid: sid}).select();
+      let set = await this.where({sid: sid}).find();
+      let setRecord=await set_userDB.where({uid:uid,sid:sid}).find();
+      set.rwrite=setRecord.rwrite;
+      set.rmatrix=setRecord.rmatrix;
       let vocabularies = await vocabularyDB.where({sid: sid}).select();
       let records = await recordDB.where({sid: sid, uid: uid}).select();
       vocabularies.forEach((vocabulary) => {
@@ -73,7 +77,7 @@ module.exports = class extends think.Model {
       return {
         set: set,
         vocabularies: vocabularies
-      };
+      }
     } catch (e) {
       await this.rollback();
       console.log(e);
@@ -103,5 +107,10 @@ module.exports = class extends think.Model {
       on:['sid','sid']
     }).where({uid:uid}).select();
     return sets;
+  }
+
+  async updateRecord(setRecord){
+    let set_userDB = await this.model('set_user').db(this.db());
+    await set_userDB.where({uid:setRecord.uid,sid:setRecord.sid}).update(setRecord);
   }
 };
