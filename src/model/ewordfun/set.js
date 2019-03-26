@@ -70,6 +70,7 @@ module.exports = class extends think.Model {
             vocabulary.rflashcard = record.rflashcard;
             vocabulary.rwrite = record.rwrite;
             vocabulary.rid = record.rid;
+            vocabulary.rmatrix_unpass_count=record.rmatrix_unpass_count;
           }
         });
       });
