@@ -1,4 +1,5 @@
 module.exports = class extends think.Model {
+  //在创建的时候，默认让创建者成为使用者
   async create(set, vocabularies, authorid) {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
