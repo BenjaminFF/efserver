@@ -6,7 +6,7 @@ module.exports = class extends think.Controller {
   }
   //create set indicates that it's vocabulary will be created, and record will be initialized.
   createAction() {
-    let authorid = this.ctx.cookie('uid');
+    let authorid = this.cookie('uid');
     let set=JSON.parse(this.ctx.post('set'));
     let vocabularies=JSON.parse(this.ctx.post('vocabularies'));
 
@@ -16,7 +16,7 @@ module.exports = class extends think.Controller {
 
     model.create(set,vocabularies,authorid);
   }
-  //remove set indicates that it's vocabularies will be removed too.
+  //remove set indicates that it's vocabularies and records about user will be removed too.
   removeAction(){
     model.remove(this.ctx.post('sid'));
   }

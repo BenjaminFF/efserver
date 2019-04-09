@@ -7,13 +7,13 @@ module.exports = class extends think.Controller {
   }
 
   createAction(){
+    console.log(this.ctx.post('puzzle'));
     let puzzle=JSON.parse(this.ctx.post('puzzle'));
-    model.create(puzzle);
+    model.create(puzzle,this.cookie('uid'));
   }
 
   async list_of_userAction(){
     let uid=this.get('uid');
-    console.log(uid);
     this.body=await model.listOfUser(uid);
   }
 }

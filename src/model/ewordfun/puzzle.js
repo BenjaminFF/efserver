@@ -1,14 +1,19 @@
 module.exports = class extends think.Model {
-  async create(puzzle) {
+  async create(puzzle,authorid) {
     try {
       let puzzle_user = await this.model('puzzle_user').db(this.db());
       await this.startTrans();
-      let pid=await this.add(puzzle);
+      let pid=await this.add({
+        name:puzzle.name,
+        intro:puzzle.intro,
+        sid:puzzle.sid,
+        info:puzzle.info,
+        authorid:authorid
+      });
       await puzzle_user.add({
         pid:pid,
-        uid:puzzle.authorid,
+        uid:authorid,
         sid:puzzle.sid,
-        rpuzzle:0
       });
       await this.commit();
     } catch (e) {

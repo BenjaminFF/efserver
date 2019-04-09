@@ -17,18 +17,13 @@ module.exports = class extends think.Model {
         records.push({
           sid: sid,
           vid: vid,
-          uid: authorid,
-          rflashcard: false,
-          rmatrix: false,
-          rwrite: false
+          uid: authorid
         });
       });
       await recordDB.addMany(records);
       await set_userDB.add({
         uid: authorid,
         sid: sid,
-        rmatrix:false,
-        rwrite:false,
         latest_learntime:set.createtime
       });
       await this.commit();
@@ -42,10 +37,12 @@ module.exports = class extends think.Model {
     try {
       let vocabularyDB = await this.model('vocabulary').db(this.db());
       let recordDB = await this.model('v_record').db(this.db());
+      let set_userDB = await this.model('set_user').db(this.db());
       await this.startTrans();
       await this.where({sid: sid}).delete();
       await vocabularyDB.where({sid: sid}).delete();
       await recordDB.where({sid: sid}).delete();
+      await set_userDB.where({sid:sid}).delete();
       await this.commit();
     } catch (e) {
       await this.rollback();

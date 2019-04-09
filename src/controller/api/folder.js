@@ -15,7 +15,7 @@ module.exports = class extends think.Controller {
     await model.add({
       name: this.ctx.post('name'),
       intro: this.ctx.post('intro'),
-      authorid: this.ctx.post('authorid'),
+      authorid: this.cookie('uid'),
       createtime: Date.now()
     });
   }
