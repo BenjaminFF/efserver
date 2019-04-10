@@ -1,12 +1,22 @@
+//errno:
+// 401 session not valid
+
+
+
+
 module.exports = options => {
   return async(ctx, next) => {
+    console.log('gg');
     let validUrls=['/api/user/login','/api/user/add'];
     if (!validUrls.includes(ctx.url)) {
       let sessionValidated=await validateSession(ctx);                 //以后再加个ip验证和登陆次数限制
       if(sessionValidated){
         return next();
       }else {
-        ctx.body={validated:false};
+        ctx.fail({
+          errno: 401,
+          errmsg: 'no permission',
+        })
         return;
       }
     } else {
@@ -17,7 +27,6 @@ module.exports = options => {
 
 async function validateSession(ctx) {
   let uid = await ctx.cookie('uid');
-  console.log(uid);
   if(typeof uid!='string'||uid.length==0){
     return false;
   }
