@@ -7,7 +7,7 @@ module.exports = class extends think.Model {
         name:puzzle.name,
         intro:puzzle.intro,
         sid:puzzle.sid,
-        info:puzzle.info,
+        chvps:puzzle.chvps,
         authorid:authorid
       });
       await puzzle_user.add({
