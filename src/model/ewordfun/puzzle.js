@@ -14,6 +14,7 @@ module.exports = class extends think.Model {
         pid:pid,
         uid:authorid,
         sid:puzzle.sid,
+        puzzle_progress:puzzle.puzzle_progress
       });
       await this.commit();
     } catch (e) {
