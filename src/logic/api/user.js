@@ -50,6 +50,24 @@ module.exports = class extends think.Logic {
   getCaptchaAction(){
     return false;
   }
+
+  sendPWChangeMailAction(){
+    let rules = {
+      email: {
+        required: true,
+        email: true,
+        method: 'post',
+        length:{max:64}
+      }
+    };
+    if(!this.validate(rules)){
+      this.body= {
+        msg:'invalid email',
+        code:'-5'
+      }
+      return false;
+    }
+  }
 };
 
 

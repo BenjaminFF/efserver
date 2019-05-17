@@ -6,9 +6,9 @@
 
 module.exports = options => {
   return async(ctx, next) => {
-    console.log('gg');
-    let validUrls=['/api/user/login','/api/user/add'];
-    if (!validUrls.includes(ctx.url)) {
+    let validUrls=['/api/user/login','/api/user/add','/api/user/sendPWChangeMail','/api/user/updatePassword'];
+    console.log(ctx.url.includes('/api/user/resetPassword'));
+    if (!validUrls.includes(ctx.url)&&!ctx.url.includes('/api/user/resetPassword')) {
       let sessionValidated=await validateSession(ctx);                 //以后再加个ip验证和登陆次数限制
       if(sessionValidated){
         return next();

@@ -6,14 +6,20 @@ module.exports = class extends think.Controller {
     //添加权限
   }
 
-  createAction(){
+  createAction() {
     console.log(this.ctx.post('puzzle'));
-    let puzzle=JSON.parse(this.ctx.post('puzzle'));
-    model.create(puzzle,this.cookie('uid'));
+    let puzzle = JSON.parse(this.ctx.post('puzzle'));
+    model.create(puzzle, this.cookie('uid'));
   }
 
-  async list_of_userAction(){
-    let uid=this.get('uid');
-    this.body=await model.listOfUser(uid);
+  async list_of_userAction() {
+    let uid = this.get('uid');
+    this.body = await model.listOfUser(uid);
   }
-}
+
+  //update puzzle_progress and rpuzzle
+  async updateProgressAction() {
+    let puzzleInfo = JSON.parse(this.ctx.post('puzzleInfo'));
+    await model.updateProgress(puzzleInfo);
+  }
+};
