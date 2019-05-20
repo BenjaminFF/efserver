@@ -85,8 +85,6 @@ module.exports = class extends think.Controller {
       this.body = {msg: '用户不存在，请注册', code: -1};
       return;
     }
-    let uniqidmd5 = think.md5(uniqid.process());
-    await this.cache(user.uid + 'pwchange', uniqidmd5, {type: 'redis', redis: {timeout: 24 * 3600 * 1000}});
     let mLink = '<a href="http://127.0.0.1:8360/api/user/resetPassword/' + user.uid + '-' + uniqidmd5 + '">http://127.0.0.1:8360/api/user/resetPassword/' + user.uid + '-' + uniqidmd5 + '</a>';
     this.assign({
       user: user.name,
@@ -102,7 +100,7 @@ module.exports = class extends think.Controller {
         pass: 'Iamaman.' // generated ethereal password
       },
       tls: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false   //拒绝不在服务端授权列表内的连接
       }
     });
     let mailOptions = {
@@ -113,6 +111,8 @@ module.exports = class extends think.Controller {
     };
     let sendInfo = await transporter.sendMail(mailOptions);
     if (sendInfo.accepted.length != 0) {           //发送失败的还没有测试
+      let uniqidmd5 = think.md5(uniqid.process());
+      await this.cache(user.uid + 'pwchange', uniqidmd5, {type: 'redis', redis: {timeout: 24 * 3600 * 1000}});
       this.body = {msg: '邮件发送成功', code: 1};
     } else {
       this.body = {msg: '邮件发送失败', code: -2};
