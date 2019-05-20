@@ -85,11 +85,9 @@ module.exports = class extends think.Controller {
       this.body = {msg: '用户不存在，请注册', code: -1};
       return;
     }
-    console.log(email);
-    return;
     let uniqidmd5 = think.md5(uniqid.process());
-    await this.cache(email, uniqidmd5, {type: 'redis', redis: {timeout: 24 * 3600 * 1000}});
-    let mLink = '<a href="http://127.0.0.1:8360/api/user/resetPassword/' + uniqidmd5 + '">http://127.0.0.1:8360/api/user/resetPassword/' + uniqidmd5 + '</a>';
+    await this.cache(user.uid + 'pwchange', uniqidmd5, {type: 'redis', redis: {timeout: 24 * 3600 * 1000}});
+    let mLink = '<a href="http://127.0.0.1:8360/api/user/resetPassword/' + user.uid + '-' + uniqidmd5 + '">http://127.0.0.1:8360/api/user/resetPassword/' + user.uid + '-' + uniqidmd5 + '</a>';
     this.assign({
       user: user.name,
       mLink: mLink
@@ -122,10 +120,35 @@ module.exports = class extends think.Controller {
   }
 
   async resetPasswordAction() {
-    return this.display();
+    let uid_uniqidmd5 = this.ctx.url.split('/').pop();
+    let uniqidmd5 = await this.ctx.cache(uid_uniqidmd5.split('-')[0] + 'pwchange', undefined, 'redis');
+    console.log(uniqidmd5);
+    this.assign({
+      linkValid: uniqidmd5 !== undefined
+    });
+    this.body=await this.render('reset_password');
+    return ;
   }
 
   async updatePasswordAction() {
-    console.log(this.ctx.post('uniqidmd5'));
+    let uid_uniqidmd5 = this.ctx.post('uid_uniqidmd5');
+    let newPass = this.ctx.post('newPass');
+    console.log(uid_uniqidmd5);
+    let uid = uid_uniqidmd5.split('-')[0];
+    console.log(uid);
+    let mUniqidmd5 = await this.ctx.cache(uid + 'pwchange', undefined, 'redis');
+    if (mUniqidmd5 != undefined && mUniqidmd5 == uid_uniqidmd5.split('-')[1]) {
+      await model.where({uid: uid}).update({password: think.md5(newPass)});
+      await this.cache(uid + 'pwchange', null, 'redis');
+      this.body = {
+        msg: 'change pass success!',
+        code: 1
+      };
+    } else {
+      this.body = {
+        msg: 'change pass failed!',
+        code: -1
+      };
+    }
   }
 };
